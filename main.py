@@ -4,7 +4,6 @@ import sys
 
 import matplotlib.pyplot as plt
 import numpy as np
-import seaborn as sns
 import tensorflow as tf
 
 from tensorflow.keras import layers
