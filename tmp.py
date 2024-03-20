@@ -27,6 +27,8 @@ from IPython import display
 from matplotlib import pyplot as plt 
 from sklearn.metrics import classification_report
 
+from sixteen_bit_conversion import convert
+
 DATA_DIR = "data"
 MINI_SPEECH_DIR = DATA_DIR + "/mini_speech_commands"
 RECORD_MODEL_PATH = 'my_model.h5'
@@ -220,24 +222,23 @@ y_true = np.concatenate([y for x, y in test_set], axis=0)
 cm = tf.math.confusion_matrix(y_true, y_pred) 
   
 # Plotting the confusion matrix 
-plt.figure(figsize=(10, 8)) 
-sns.heatmap(cm, annot=True, fmt='g') 
-plt.xlabel('Predicted') 
-plt.ylabel('Actual') 
-plt.show()
+# plt.figure(figsize=(10, 8)) 
+# sns.heatmap(cm, annot=True, fmt='g') 
+# plt.xlabel('Predicted') 
+# plt.ylabel('Actual') 
+# plt.show()
 
 
-if show_plots:
-    report = classification_report(y_true, y_pred) 
-    print(report)
+# if show_plots:
+#     report = classification_report(y_true, y_pred) 
+#     print(report)
 
 
 def test_model():
-    # testing with one item
+    # testing with one sample
     try:
-        # file may be included as parameter
-        # use `folder`/`filename`
         path = f"{os.getcwd()}/data/{sys.argv[2]}"
+        random_label = sys.argv[2].split("/")[1]
     except IndexError:
         # get one of minispeech subfolder
         random_label = random.choice(os.listdir(f"{os.getcwd()}/{MINI_SPEECH_DIR}"))
@@ -245,17 +246,22 @@ def test_model():
         random_file = random.choice(os.listdir(f"{os.getcwd()}/{MINI_SPEECH_DIR}/{random_label}"))
         path = f"{os.getcwd()}/{MINI_SPEECH_DIR}/{random_label}/{random_file}"
     
-    print("expected", path)
+    print("path:", path, "\n\nrandom_label:", random_label, "\n_____\n")
+
+    # TODO: don't forget to add the test to determine if the sample needs to be converted to 16bits
+    convert(path)
 
     Input = tf.io.read_file(str(path)) 
     x, sample_rate = tf.audio.decode_wav(Input, desired_channels=1, desired_samples=16000,) 
-    audio, labels = squeeze(x, 'yes') 
+    audio, _ = squeeze(x, 'yes') 
     
     waveform = audio 
     display.display(display.Audio(waveform, rate=16000)) 
     
     x = get_spectrogram(audio) 
     x = tf.expand_dims(x, axis=0) 
+    plot_wave(audio, random_label) 
+    plot_spectrogram(x, random_label)
     
     prediction = model(x) 
     plt.bar(label_names, tf.nn.softmax(prediction[0])) 

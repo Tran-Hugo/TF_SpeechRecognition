@@ -113,3 +113,5 @@ wcwidth==0.2.13
 Werkzeug==3.0.1
 wrapt==1.14.1
 zipp==3.13.0
+librosa
+soundfile
