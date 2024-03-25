@@ -14,16 +14,7 @@ train_set = pathlib.Path("data/mini_speech_commands")
 commands = np.array(tf.io.gfile.listdir(str(train_set)))
 print("Commands:", commands)
 loaded_model = models.load_model("my_model.h5")
-mappin_commands = {
-    "up": 0x2C, # W
-    "down": 0x1F, # S
-    "stop": 0x01, #esc
-    "left": 0x10, #Q
-    "right": 0x20, #D
-    "go": 0x1C, # enter
-    "yes": 0x26, # l
-    "no": 0x32, # m
-}
+
 
 def predict_mic():
     audio = record_audio()
@@ -40,11 +31,10 @@ def predict_mic():
 
 if __name__ == "__main__":
     input_sender.focus("Pokemon")
+    last_input = None
     while True:
         command = predict_mic()
-
-        if command in mappin_commands:
-            input_sender.KeyPress(mappin_commands[command])
+        last_input = input_sender.KeyPress(command, last_input)
             
         # if command == "stop":
         #     terminate()
