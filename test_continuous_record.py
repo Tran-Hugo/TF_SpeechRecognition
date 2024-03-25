@@ -10,7 +10,7 @@ import numpy as np
 Threshold = 10
 
 SHORT_NORMALIZE = (1.0/32768.0)
-chunk = 1024 # 3200
+chunk = 3200
 FORMAT = pyaudio.paInt16
 CHANNELS = 1
 RATE = 16000
@@ -57,9 +57,9 @@ class Recorder:
         print('Written to file: {}'.format(filename))
         print('Returning to listening')
 
-    def record(self):
+    def record(self, prev_rec: list):
         print('Noise detected, recording beginning')
-        rec = []
+        rec = prev_rec
         current = time.time()
         end = time.time() + TIMEOUT_LENGTH
 
@@ -71,18 +71,21 @@ class Recorder:
 
             current = time.time()
             rec.append(data)
+        print(len(rec))
         self.write(b''.join(rec))
         return np.frombuffer(b''.join(rec), dtype=np.int16)
 
 
 
-    def     listen(self):
+    def listen(self):
         print('Listening beginning')
+        rec = []
         while True:
             input = self.stream.read(chunk)
+            rec += [input]
             rms_val = self.rms(input)
             if rms_val > Threshold:
-                return self.record()
+                return self.record(rec[-5:])
 
     def terminate(self):
         self.p.terminate()
