@@ -9,7 +9,6 @@ from tf_helper import preprocess_audiobuffer
 import pathlib
 
 import input_sender
-import noisereduce as nr
 
 # !! Modify this in the correct order
 train_set = pathlib.Path("data/mini_speech_commands")

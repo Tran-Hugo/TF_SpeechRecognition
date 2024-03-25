@@ -60,19 +60,12 @@ class Recorder:
     def record(self, prev_rec: list):
         print('Noise detected, recording beginning')
         rec = prev_rec
-        current = time.time()
-        end = time.time() + TIMEOUT_LENGTH
 
-        while current <= end:
-
+        for _ in range(int(RATE / chunk)):
             data = self.stream.read(chunk)
-            if self.rms(data) >= Threshold:
-                end = time.time() + TIMEOUT_LENGTH
-
-            current = time.time()
             rec.append(data)
         print(len(rec))
-        self.write(b''.join(rec))
+        # self.write(b''.join(rec))
         return np.frombuffer(b''.join(rec), dtype=np.int16)
 
 
@@ -85,7 +78,7 @@ class Recorder:
             rec += [input]
             rms_val = self.rms(input)
             if rms_val > Threshold:
-                return self.record(rec[-5:])
+                return self.record(rec[-3:])
 
     def terminate(self):
         self.p.terminate()
