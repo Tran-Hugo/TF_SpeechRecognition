@@ -17,7 +17,7 @@ RATE = 16000
 swidth = 2
 
 TIMEOUT_LENGTH = 1
-
+f_name_directory = os.getcwd() + "/records/"
 class Recorder:
 
     @staticmethod
@@ -43,6 +43,20 @@ class Recorder:
         output=True,
         frames_per_buffer=chunk)
 
+    def write(self, recording):
+        n_files = len(os.listdir(f_name_directory))
+
+        filename = os.path.join(f_name_directory, '{}.wav'.format(n_files))
+
+        wf = wave.open(filename, 'wb')
+        wf.setnchannels(CHANNELS)
+        wf.setsampwidth(self.p.get_sample_size(FORMAT))
+        wf.setframerate(RATE)
+        wf.writeframes(recording)
+        wf.close()
+        print('Written to file: {}'.format(filename))
+        print('Returning to listening')
+
     def record(self):
         print('Noise detected, recording beginning')
         rec = []
@@ -57,11 +71,12 @@ class Recorder:
 
             current = time.time()
             rec.append(data)
+        self.write(b''.join(rec))
         return np.frombuffer(b''.join(rec), dtype=np.int16)
 
 
 
-    def listen(self):
+    def     listen(self):
         print('Listening beginning')
         while True:
             input = self.stream.read(chunk)

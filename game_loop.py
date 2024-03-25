@@ -9,6 +9,7 @@ from tf_helper import preprocess_audiobuffer
 import pathlib
 
 import input_sender
+import noisereduce as nr
 
 # !! Modify this in the correct order
 train_set = pathlib.Path("data/mini_speech_commands")
@@ -18,8 +19,9 @@ loaded_model = models.load_model("my_model.h5")
 
 
 def predict_mic():
-    audio = record_audio()
-    
+    audio = Recorder().listen()
+    # tmp
+    # reduced_noise = nr.reduce_noise(y=audio, sr=16000)
     spec = preprocess_audiobuffer(audio)
     prediction = loaded_model(spec)
 
@@ -34,9 +36,8 @@ def predict_mic():
 if __name__ == "__main__":
     input_sender.focus("Pokemon")
     last_input = None
-    recorder = Recorder()
     while True:
-        command = recorder.listen()
+        command = predict_mic()
         last_input = input_sender.KeyPress(command, last_input)
             
         # if command == "stop":
