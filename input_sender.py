@@ -75,9 +75,9 @@ def KeyPress(command: str, last_command: str):
         return
     time.sleep(0.1)
     PressKey(hexKeyCode) # press Q
-    if stoppers[command] == last_command or command in ["yes", "no", "go"]:
+    if command in ["stop", "yes", "no", "go"] or stoppers[command] == last_command :
         time.sleep(0.1)
-        ReleaseKey(hexKeyCode) #release Q
+        ReleaseKey(hexKeyCode)
     return command
 
 def focus(title):

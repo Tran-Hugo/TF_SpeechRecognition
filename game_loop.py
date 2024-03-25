@@ -3,7 +3,8 @@ import tensorflow as tf
 from tensorflow.keras import models
 from matplotlib import pyplot as plt 
 
-from recording_helper import record_audio, terminate
+# from recording_helper import record_audio, terminate
+from test_continuous_record import Recorder
 from tf_helper import preprocess_audiobuffer
 import pathlib
 
@@ -18,6 +19,7 @@ loaded_model = models.load_model("my_model.h5")
 
 def predict_mic():
     audio = record_audio()
+    
     spec = preprocess_audiobuffer(audio)
     prediction = loaded_model(spec)
 
@@ -32,8 +34,9 @@ def predict_mic():
 if __name__ == "__main__":
     input_sender.focus("Pokemon")
     last_input = None
+    recorder = Recorder()
     while True:
-        command = predict_mic()
+        command = recorder.listen()
         last_input = input_sender.KeyPress(command, last_input)
             
         # if command == "stop":
